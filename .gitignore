@@ -8,3 +8,5 @@ data/
 *.pdf
 *.csv
 .env
+output/playwright/
+.playwright-cli/

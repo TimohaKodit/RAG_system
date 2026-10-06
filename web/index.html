@@ -1,0 +1,211 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f2">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23275b47%27/%3E%3Cpath d=%27M11 7h8l4 4v15H11zm8 0v5h4M7 11v15%27 fill=%27none%27 stroke=%27white%27 stroke-width=%271.5%27/%3E%3C/svg%3E">
+  <title>Лист — вопросы к документам</title>
+  <style>
+    :root{--bg:#f5f6f2;--paper:#fff;--ink:#202e29;--muted:#748078;--line:#e4e8e1;--green:#275b47;--tint:#edf3ed;--danger:#a63d35;--radius:20px}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.5}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}button:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #8bbaa0;outline-offset:3px}svg{display:block}button{border:0}header{max-width:1440px;margin:auto;padding:28px 44px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px}.brand-symbol{width:38px;height:38px;display:grid;place-items:center;background:var(--green);color:white;border-radius:12px}.brand-name{font-size:24px;font-weight:650;letter-spacing:-1px}.brand-note{font-size:12px;color:var(--muted);padding-left:15px;margin-left:5px;border-left:1px solid var(--line)}.profile{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}.dot{height:7px;width:7px;flex:none;background:#699777;border-radius:50%}.layout{max-width:1440px;margin:0 auto;padding:8px 44px 32px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:stretch;min-height:calc(100dvh - 108px)}.chat{display:flex;flex-direction:column;min-height:620px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.chat-head{display:flex;justify-content:space-between;align-items:center;padding:21px 26px;border-bottom:1px solid var(--line);gap:12px}.eyebrow{font-size:11px;font-weight:650;letter-spacing:1.4px;color:var(--muted);text-transform:uppercase}.chat-title{font-size:15px;font-weight:600;margin-top:3px}.quiet{background:transparent;padding:7px;color:var(--muted);border-radius:8px;font-size:12px}.quiet:hover{background:var(--tint);color:var(--green)}.messages{flex:1;padding:30px 28px;overflow:auto;max-height:calc(100dvh - 315px);min-height:350px}.empty{max-width:520px;margin:54px auto 70px}.empty-icon{width:58px;height:58px;border-radius:18px;background:var(--tint);color:var(--green);display:grid;place-items:center;margin-bottom:27px}h1{font-size:36px;font-weight:550;line-height:1.18;letter-spacing:-1.3px;margin:0 0 16px}.intro{font-size:15px;color:var(--muted);max-width:415px;margin:0 0 28px;line-height:1.7}.steps{display:grid;grid-template-columns:1fr 1fr;gap:12px}.step{padding:17px 18px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px}.step-number{color:var(--green);font-size:11px;font-weight:600;margin-bottom:8px}.step b{display:block;color:var(--ink);font-size:13px;font-weight:550;margin-bottom:4px}.message{margin-bottom:25px;max-width:90%;animation:appear .2s ease-out}.message.user{margin-left:auto;max-width:82%}.message-label{color:var(--muted);font-size:11px;margin:0 0 7px;display:flex;align-items:center;gap:6px}.user .message-label{justify-content:flex-end}.message-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75;font-size:14px}.user .message-body{background:var(--tint);padding:13px 18px;border-radius:15px 15px 3px 15px}.ai .message-body{padding:0 0 0 1px}.pending .message-body{color:var(--muted)}.composer-area{margin-top:auto;padding:0 22px 17px}.composer{border:1px solid #d9e1d8;border-radius:15px;padding:12px 12px 12px 16px;display:flex;align-items:flex-end;gap:12px;transition:border-color .2s}.composer:focus-within{border-color:#7eaa8e}.composer textarea{resize:none;min-height:46px;max-height:150px;flex:1;border:0;outline:none;background:transparent;color:var(--ink);padding:9px 0;font-size:14px;line-height:1.6}.composer textarea::placeholder{color:#969f97}.send{width:42px;height:42px;border-radius:11px;background:var(--green);color:white;flex:none;display:grid;place-items:center}.send:hover:not(:disabled){background:#194633}.composer-note{display:flex;justify-content:space-between;margin-top:11px;font-size:10px;color:#929b94;gap:12px}.status{font-size:12px;color:var(--muted);min-height:20px;margin:0 4px 8px;overflow-wrap:anywhere}.status.error{color:var(--danger)}.side{display:flex;flex-direction:column;gap:17px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:24px}.panel-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.panel-title h2{font-size:15px;font-weight:600;margin:0}.counter{display:grid;place-items:center;border-radius:6px;background:var(--tint);font-size:11px;color:var(--green);min-width:24px;height:23px}.upload-box{width:100%;background:#f8faf6;border:1px dashed #bacabc;border-radius:13px;padding:24px 12px;color:var(--green);display:flex;flex-direction:column;align-items:center;gap:8px}.upload-box:hover:not(:disabled){background:var(--tint);border-color:var(--green)}.upload-icon{margin-bottom:3px}.upload-main{font-size:13px;font-weight:600}.upload-note{font-size:11px;color:var(--muted)}.upload-status{font-size:12px;line-height:1.6;margin-top:13px;color:var(--muted);overflow-wrap:anywhere}.upload-status.error{color:var(--danger)}.documents{margin-top:18px}.document{display:flex;align-items:flex-start;gap:11px;padding:15px 0;border-top:1px solid var(--line)}.file-icon{background:var(--tint);color:var(--green);border-radius:8px;padding:9px;flex:none}.file-title{font-size:12px;font-weight:550;overflow-wrap:anywhere}.file-meta{font-size:10px;color:var(--muted);margin-top:4px}.no-docs{font-size:12px;color:var(--muted);margin:17px 0 0;line-height:1.7}.about{padding:22px 24px;background:#eaf0e7;border:1px solid #e0e8db;border-radius:var(--radius)}.about h2{font-size:12px;margin:0 0 10px;font-weight:600}.about p{font-size:12px;color:#6c7d6d;line-height:1.8;margin:0}.profile-note{font-size:10px;color:var(--muted);line-height:1.7;padding:3px 7px}.profile-note strong{font-weight:500;color:#506659}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}[hidden]{display:none!important}@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@media(min-width:1600px){.layout{min-height:750px}.messages{max-height:650px}}@media(max-width:1000px){header{padding:24px}.layout{padding:8px 24px 24px;grid-template-columns:minmax(0,1fr) 280px;gap:16px}.panel{padding:20px}.brand-note{display:none}.empty{margin-top:45px}h1{font-size:31px}.messages{padding:25px 22px}.steps{grid-template-columns:1fr}}@media(max-width:720px){header{padding:18px 18px 12px}.brand-name{font-size:22px}.profile{font-size:10px}.layout{display:flex;flex-direction:column;padding:10px 14px 20px;gap:14px;min-height:0}.side{order:-1;gap:10px}.panel{padding:17px;border-radius:16px}.panel-title{margin-bottom:13px}.upload-box{padding:14px;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:9px}.upload-icon{margin:0}.upload-note{width:100%;text-align:center}.documents{margin-top:10px}.no-docs{margin-top:12px}.about,.profile-note{display:none}.chat{min-height:550px;border-radius:16px}.chat-head{padding:17px 18px}.messages{min-height:300px;max-height:60dvh;padding:24px 20px}.empty{margin:20px auto 35px}.empty-icon{margin-bottom:22px;width:48px;height:48px}h1{font-size:29px}.intro{font-size:13px}.steps{grid-template-columns:1fr 1fr;gap:8px}.step{padding:13px;font-size:11px}.step b{font-size:12px}.composer-area{padding:0 14px 14px}.composer-note span:last-child{display:none}.message{max-width:100%}}@media(prefers-reduced-motion:reduce){.message{animation:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="brand-symbol" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none"><path d="M7 4h8l4 4v12H7V4Z" stroke="currentColor" stroke-width="1.5"/><path d="M15 4v5h4M10 12h6m-6 4h5M4 7v14" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="brand-name">Лист</span><span class="brand-note">Вопросы к вашим документам</span></div>
+    <div class="profile"><span class="dot" aria-hidden="true"></span><span>Локальный профиль</span></div>
+  </header>
+  <main class="layout">
+    <section class="chat" aria-label="Чат с документами">
+      <div class="chat-head"><div><div class="eyebrow">Рабочее пространство</div><div class="chat-title">Диалог с документами</div></div><button class="quiet" id="clear-chat" type="button">Очистить чат</button></div>
+      <div class="messages" id="messages" role="log" aria-label="Сообщения" aria-live="polite">
+        <div class="empty" id="empty-state"><div class="empty-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v12H9l-4 4V4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 8h6m-6 4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><h1>Ваши документы.<br>Ваши вопросы.</h1><p class="intro">Загрузите PDF и задайте вопрос. Лист найдёт нужный контекст в документах и поможет разобраться в содержимом.</p><div class="steps"><div class="step"><div class="step-number">01 / ДОКУМЕНТ</div><b>Добавьте PDF</b>Материалы, инструкции, конспекты.</div><div class="step"><div class="step-number">02 / ВОПРОС</div><b>Начните диалог</b>Спросите о том, что хотите понять.</div></div></div>
+      </div>
+      <div class="composer-area"><p class="status" id="chat-status" role="status" aria-live="polite"></p><form class="composer" id="chat-form"><label for="question" class="sr-only">Ваш вопрос</label><textarea id="question" rows="1" placeholder="Задайте вопрос по документам…" maxlength="12000" required></textarea><button class="send" id="send-button" type="submit" disabled aria-label="Отправить вопрос"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 12 6-6 6 6M12 6v13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form><div class="composer-note"><span>Ответ может содержать неточности — сверяйте его с документом.</span><span>Enter — отправить</span></div></div>
+    </section>
+    <aside class="side" aria-label="Документы">
+      <section class="panel"><div class="panel-title"><h2>Документы</h2><span class="counter" id="document-count">0</span></div><input type="file" id="pdf-input" accept=".pdf,application/pdf" hidden><button class="upload-box" id="upload-button" type="button"><svg class="upload-icon" width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M5 14v6h14v-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="upload-main">Выбрать PDF</span><span class="upload-note">Один файл · до 20 МБ</span></button><div class="upload-status" id="upload-status" role="status" aria-live="polite"></div><div class="documents" id="documents"></div><p class="no-docs" id="no-docs">Здесь появятся документы, загруженные в этой сессии.</p></section>
+      <section class="about"><h2>Хороший вопрос — точный ответ</h2><p>Укажите тему или термин из документа. Для уточнения можно задать следующий вопрос: последние 10 сообщений сохраняются в истории диалога.</p></section>
+      <div class="profile-note"><strong id="profile-id">Локальный профиль</strong><br>Профиль хранится в этом браузере. Это идентификатор для документов и истории, а не авторизация.</div>
+    </aside>
+  </main>
+  <script>
+    'use strict';
+    const storageKey = 'list-rag-v1';
+    const maxPdfBytes = 20 * 1024 * 1024;
+    const $ = (id) => document.getElementById(id);
+    let stored = {};
+    try { stored = JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; } catch (_) {}
+    const random = new Uint32Array(1);
+    crypto.getRandomValues(random);
+    const userId = Number.isSafeInteger(stored.userId) && stored.userId > 0 ? stored.userId : random[0] + 1;
+    let history = Array.isArray(stored.history) ? stored.history.filter((item) => item && ['user', 'ai'].includes(item.role) && typeof item.content === 'string' && item.content.trim()).slice(-10) : [];
+    let busy = false;
+    let documentCount = 0;
+    let storageAvailable = true;
+
+    function persist() {
+      try { localStorage.setItem(storageKey, JSON.stringify({userId, history})); }
+      catch (_) { storageAvailable = false; }
+    }
+    function status(id, text, error = false) {
+      $(id).textContent = text;
+      $(id).classList.toggle('error', error);
+    }
+    function syncControls() {
+      $('send-button').disabled = busy || !$('question').value.trim();
+      $('upload-button').disabled = busy;
+      $('clear-chat').disabled = busy || history.length === 0;
+      $('question').disabled = busy;
+      $('chat-form').setAttribute('aria-busy', String(busy));
+    }
+    function addMessage(role, content, pending = false) {
+      $('empty-state').hidden = true;
+      const row = document.createElement('article');
+      row.className = 'message ' + role + (pending ? ' pending' : '');
+      const label = document.createElement('div');
+      label.className = 'message-label';
+      label.textContent = role === 'user' ? 'Вы' : 'Лист';
+      const body = document.createElement('div');
+      body.className = 'message-body';
+      body.textContent = content;
+      row.append(label, body);
+      $('messages').append(row);
+      $('messages').scrollTop = $('messages').scrollHeight;
+      return row;
+    }
+    function restoreChat() {
+      $('messages').querySelectorAll('.message').forEach((node) => node.remove());
+      $('empty-state').hidden = history.length > 0;
+      history.forEach((item) => addMessage(item.role, item.content));
+    }
+    function errorDetail(data, fallback) {
+      if (data && typeof data.detail === 'string' && data.detail.trim()) return data.detail;
+      if (data && Array.isArray(data.detail)) return 'Проверьте файл и заполненные поля. Если ошибка повторится, перезагрузите страницу.';
+      return fallback;
+    }
+    async function request(path, options, timeoutMs) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(path, {...options, signal: controller.signal});
+        let data;
+        try { data = await response.json(); }
+        catch (_) { throw new Error('Сервис вернул некорректный ответ. Попробуйте позже.'); }
+        if (!response.ok) throw new Error(errorDetail(data, 'Не удалось выполнить запрос. Попробуйте ещё раз позже.'));
+        return data;
+      } catch (error) {
+        if (error.name === 'AbortError') throw new Error('Сервис не успел ответить. Попробуйте ещё раз.');
+        if (error instanceof TypeError) throw new Error('Нет связи с сервисом. Проверьте подключение и попробуйте позже.');
+        throw error;
+      } finally { clearTimeout(timer); }
+    }
+    $('profile-id').textContent = 'Профиль № ' + userId;
+    persist();
+    restoreChat();
+    syncControls();
+    if (!storageAvailable) status('chat-status', 'Браузер не разрешает сохранить профиль. История доступна до перезагрузки страницы.');
+
+    $('question').addEventListener('input', () => {
+      $('question').style.height = 'auto';
+      $('question').style.height = Math.min($('question').scrollHeight, 150) + 'px';
+      syncControls();
+    });
+    $('question').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        if (!busy && $('question').value.trim()) $('chat-form').requestSubmit();
+      }
+    });
+    $('chat-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const input = $('question').value.trim();
+      if (busy || !input) return;
+      busy = true;
+      syncControls();
+      status('chat-status', 'Ищем ответ в документах…');
+      const userRow = addMessage('user', input, true);
+      const pendingRow = addMessage('ai', 'Готовим ответ…', true);
+      try {
+        const data = await request('/ask', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({input, user_id: userId, chat_history: history})}, 120000);
+        if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('Сервис вернул пустой ответ. Попробуйте задать вопрос ещё раз.');
+        pendingRow.remove();
+        userRow.classList.remove('pending');
+        addMessage('ai', data.answer);
+        history = [...history, {role: 'user', content: input}, {role: 'ai', content: data.answer}].slice(-10);
+        persist();
+        $('question').value = '';
+        $('question').style.height = 'auto';
+        status('chat-status', storageAvailable ? '' : 'Ответ получен. Браузер не разрешает сохранить историю после перезагрузки.');
+      } catch (error) {
+        userRow.remove();
+        pendingRow.remove();
+        $('empty-state').hidden = history.length > 0;
+        status('chat-status', error.message || 'Не удалось получить ответ. Попробуйте позже.', true);
+      } finally {
+        busy = false;
+        syncControls();
+        $('question').focus();
+      }
+    });
+    $('clear-chat').addEventListener('click', () => {
+      if (busy) return;
+      history = [];
+      persist();
+      restoreChat();
+      status('chat-status', 'История диалога очищена. Загруженные документы сохранены.');
+      syncControls();
+    });
+    $('upload-button').addEventListener('click', () => $('pdf-input').click());
+    $('pdf-input').addEventListener('change', async () => {
+      const file = $('pdf-input').files[0];
+      $('pdf-input').value = '';
+      if (!file || busy) return;
+      if (!file.name.toLowerCase().endsWith('.pdf') || (file.type && !['application/pdf', 'application/octet-stream'].includes(file.type))) {
+        status('upload-status', 'Выберите файл в формате PDF.', true);
+        return;
+      }
+      if (file.size === 0 || file.size > maxPdfBytes) {
+        status('upload-status', file.size === 0 ? 'Файл пустой. Выберите PDF с текстом.' : 'Файл слишком большой. Максимальный размер — 20 МБ.', true);
+        return;
+      }
+      busy = true;
+      syncControls();
+      status('upload-status', 'Загружаем и обрабатываем «' + file.name + '»…');
+      const form = new FormData();
+      form.append('file', file);
+      form.append('user_id', String(userId));
+      try {
+        const data = await request('/upload', {method: 'POST', body: form}, 180000);
+        if (!data || !Number.isInteger(data.chunks) || data.chunks <= 0) throw new Error('Не удалось добавить текст документа. Попробуйте другой PDF.');
+        const row = document.createElement('div');
+        row.className = 'document';
+        const icon = document.createElement('div');
+        icon.className = 'file-icon';
+        icon.textContent = 'PDF';
+        icon.style.fontSize = '10px';
+        icon.style.fontWeight = '600';
+        const detail = document.createElement('div');
+        const name = document.createElement('div');
+        name.className = 'file-title';
+        name.textContent = file.name;
+        const meta = document.createElement('div');
+        meta.className = 'file-meta';
+        meta.textContent = 'Готов к вопросам · ' + (file.size / 1024 / 1024).toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' МБ';
+        detail.append(name, meta);
+        row.append(icon, detail);
+        $('documents').append(row);
+        $('document-count').textContent = String(++documentCount);
+        $('no-docs').hidden = true;
+        status('upload-status', 'PDF добавлен. Теперь можно задать вопрос.');
+      } catch (error) {
+        status('upload-status', error.message || 'Не удалось загрузить PDF. Попробуйте ещё раз.', true);
+      } finally {
+        busy = false;
+        syncControls();
+      }
+    });
+  </script>
+</body>
+</html>
