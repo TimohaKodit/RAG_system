@@ -1,4 +1,5 @@
 import os
+import unicodedata
 from uuid import uuid4
 
 from dotenv import load_dotenv
@@ -21,7 +22,21 @@ class InvalidPDFError(ValueError):
     """PDF повреждён или не содержит доступного для поиска текста."""
 
 
-def dc(file_path: str, user_id: int) -> int:
+def _safe_document_name(value: str | None, fallback: str = "Документ.pdf") -> str:
+    """Keep a display filename without paths, controls or URL query secrets."""
+    if not isinstance(value, str):
+        return fallback
+    name = value.split("?", 1)[0].split("#", 1)[0]
+    name = name.replace("\\", "/").rsplit("/", 1)[-1]
+    name = "".join(
+        char for char in name
+        if not unicodedata.category(char).startswith("C")
+    )
+    name = name.replace(":", "").strip()[:255]
+    return name if name and name not in (".", "..") else fallback
+
+
+def dc(file_path: str, user_id: int, *, document_name: str | None = None) -> int:
     """Индексировать текст PDF и вернуть число добавленных фрагментов."""
     try:
         loader = PyPDFLoader(file_path)
@@ -40,8 +55,10 @@ def dc(file_path: str, user_id: int) -> int:
     if not chunks:
         raise InvalidPDFError("В PDF нет текста, доступного для поиска.")
 
+    display_name = _safe_document_name(document_name, _safe_document_name(file_path))
     for doc in chunks:
         doc.metadata["user_id"] = int(user_id)
+        doc.metadata["document_name"] = display_name
 
     attempted_ids: list[str] = []
     try:

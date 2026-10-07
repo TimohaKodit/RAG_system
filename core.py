@@ -1,4 +1,5 @@
 import os
+import unicodedata
 from typing import Any
 
 from dotenv import load_dotenv
@@ -77,17 +78,55 @@ def _owned_text_documents(documents: list[Document], user_id: int) -> list[Docum
     ]
 
 
-def _answer_checked_context(values: dict[str, Any], config: RunnableConfig) -> str:
+def _context_sources(documents: list[Document]) -> list[dict[str, Any]]:
+    """Describe the supplied context, without claiming sentence-level citations."""
+    sources: list[dict[str, Any]] = []
+    seen: set[tuple[str, int | None]] = set()
+    for document in documents:
+        name = ""
+        candidates = (
+            document.metadata.get("document_name"),
+            document.metadata.get("source"),
+        )
+        for candidate in candidates:
+            if not isinstance(candidate, str):
+                continue
+            candidate = candidate.split("?", 1)[0].split("#", 1)[0]
+            candidate = candidate.replace("\\", "/").rsplit("/", 1)[-1]
+            candidate = "".join(
+                char for char in candidate
+                if not unicodedata.category(char).startswith("C")
+            ).replace(":", "").strip()[:255]
+            if candidate and candidate not in (".", ".."):
+                name = candidate
+                break
+        name = name or "Документ.pdf"
+        raw_page = document.metadata.get("page")
+        page = (
+            raw_page + 1
+            if type(raw_page) is int and 0 <= raw_page < 2**53 - 1 else None
+        )
+        key = (name, page)
+        if key not in seen:
+            seen.add(key)
+            sources.append({"document": name, "page": page})
+    return sources[:20]
+
+
+def _answer_checked_context(
+    values: dict[str, Any], config: RunnableConfig,
+) -> dict[str, Any]:
     documents = values["context"]
     if not documents:
-        return NO_CONTEXT_ANSWER
+        return {**values, "answer": NO_CONTEXT_ANSWER, "sources": []}
     sufficient = check_context(
         values["retrieval_question"],
         [document.page_content for document in documents],
     )
     if sufficient is False:
-        return INSUFFICIENT_CONTEXT_ANSWER
-    return question_answer_chain.invoke(values, config=config)
+        return {**values, "answer": INSUFFICIENT_CONTEXT_ANSWER, "sources": []}
+    answer = question_answer_chain.invoke(values, config=config)
+    return {**values, "answer": answer, "sources": _context_sources(documents)}
 
 
 def get_rag_chain(user_id: int) -> Runnable[dict[str, Any], dict[str, Any]]:
@@ -125,6 +164,5 @@ def get_rag_chain(user_id: int) -> Runnable[dict[str, Any], dict[str, Any]]:
         )
         .assign(retrieval_question=retrieval_question)
         .assign(context=retrieved_context)
-        .assign(answer=RunnableLambda(_answer_checked_context))
-        .with_config(run_name="checked_retrieval_chain")
-    )
+        | RunnableLambda(_answer_checked_context)
+    ).with_config(run_name="checked_retrieval_chain")

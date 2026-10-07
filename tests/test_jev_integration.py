@@ -93,7 +93,8 @@ def test_followup_checks_same_owned_context_it_generates(integrated_app):
         "chat_history": [{"role": "user", "content": "Расскажи про Python"}],
     })
     assert response.status_code == 200
-    assert response.json() == {"answer": "Ответ по проверенному PDF"}
+    assert response.json()["answer"] == "Ответ по проверенному PDF"
+    assert isinstance(response.json()["sources"], list)
     assert len(state.rewrites) == len(state.searches) == len(state.requests) == 1
     assert state.requests[0]["state"] == {
         "question": state.searches[0][0], "passages": ["Private Python notes"],
@@ -129,6 +130,7 @@ def test_rejection_is_successful_abstention_without_generation(integrated_app):
     response = client.post("/ask", json={"input": "Question", "user_id": 101})
     assert response.status_code == 200
     assert "недостаточно информации" in response.json()["answer"]
+    assert response.json()["sources"] == []
     assert len(state.requests) == 1
     assert state.generations == []
 

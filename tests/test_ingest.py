@@ -79,8 +79,8 @@ def test_adds_only_text_and_preserves_source_metadata(ingest_module):
     ingest_module.splitter_class.assert_called_once_with(
         chunk_size=800, chunk_overlap=200
     )
-    assert docs[0].metadata == {"source": "manual.pdf", "page": 2, "user_id": 17}
-    assert docs[2].metadata == {"source": "manual.pdf", "page": 4, "user_id": 17}
+    assert docs[0].metadata == {"source": "manual.pdf", "page": 2, "user_id": 17, "document_name": "manual.pdf"}
+    assert docs[2].metadata == {"source": "manual.pdf", "page": 4, "user_id": 17, "document_name": "manual.pdf"}
     added = ingest_module.store.add_documents.call_args_list
     assert [call.kwargs["documents"][0] for call in added] == [docs[0], docs[2]]
     ids = [call.kwargs["ids"][0] for call in added]
@@ -211,3 +211,23 @@ def test_keeps_embedding_model_and_storage_settings(ingest_module):
         embedding_function=ingest_module.module.embeddings,
         persist_directory="./db",
     )
+
+
+@pytest.mark.parametrize("name, expected", [
+    ("Учебник.pdf", "Учебник.pdf"),
+    ("../../Учебник.pdf", "Учебник.pdf"),
+    (r"C:\private\Учебник.pdf", "Учебник.pdf"),
+    ("bad\x00\nname.pdf", "badname.pdf"),
+    ("..", "stored.pdf"), (" ", "stored.pdf"),
+    (None, "stored.pdf"),
+    ("manual.pdf?key=secret", "manual.pdf"),
+    ("manual.pdf?key=secret/part", "manual.pdf"),
+    ("a" * 260 + ".pdf", "a" * 255),
+])
+def test_original_filename_is_safe_and_does_not_replace_loader_metadata(ingest_module, name, expected):
+    doc = document("Text", source="/private/stored.pdf", page=6)
+    ingest_module.loader.load.return_value = [doc]
+    assert ingest_module.module.dc("/private/stored.pdf", 17, document_name=name) == 1
+    assert doc.metadata == {
+        "source": "/private/stored.pdf", "page": 6, "user_id": 17, "document_name": expected,
+    }

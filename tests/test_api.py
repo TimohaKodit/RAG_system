@@ -13,7 +13,7 @@ def api_client(monkeypatch, tmp_path):
     state = SimpleNamespace(
         user_ids=[], calls=[], response={"answer": "Ответ по документу"},
         factory_error=None, invoke_error=None,
-        upload_calls=[], chunks=3, upload_error=None,
+        upload_calls=[], upload_names=[], chunks=3, upload_error=None,
     )
 
     class StubChain:
@@ -38,7 +38,8 @@ def api_client(monkeypatch, tmp_path):
     class InvalidPDFError(ValueError):
         pass
 
-    def dc(file_path, user_id):
+    def dc(file_path, user_id, *, document_name=None):
+        state.upload_names.append(document_name)
         state.upload_calls.append((Path(file_path), user_id, Path(file_path).read_bytes()))
         if state.upload_error is not None:
             raise state.upload_error
@@ -65,7 +66,7 @@ def test_success_preserves_response_contract_and_user_isolation(api_client):
     for user_id in (101, 202):
         response = client.post("/ask", json={"input": "Вопрос", "user_id": user_id})
         assert response.status_code == 200
-        assert response.json() == {"answer": "Ответ по документу"}
+        assert response.json() == {"answer": "Ответ по документу", "sources": []}
     assert state.user_ids == [101, 202]
     assert state.calls == [
         (101, {"input": "Вопрос", "chat_history": []}),
@@ -154,7 +155,7 @@ def test_internal_chain_fields_are_not_exposed(api_client):
     state.response = {"answer": "Ответ", "context": "Закрытый текст документа"}
     result = client.post("/ask", json={"input": "Вопрос", "user_id": 101})
     assert result.status_code == 200
-    assert result.json() == {"answer": "Ответ"}
+    assert result.json() == {"answer": "Ответ", "sources": []}
 
 
 def test_home_serves_html_from_configured_absolute_path(api_client, monkeypatch, tmp_path):
@@ -350,3 +351,57 @@ def test_home_loads_without_rag_provider_initialization(monkeypatch):
         response = client.get("/")
     assert response.status_code == 200
     assert '<html lang="ru">' in response.text
+
+
+def test_sources_are_typed_and_extra_provider_metadata_is_not_exposed(api_client):
+    client, state, _ = api_client
+    state.response = {
+        "answer": "Ответ", "sources": [{"document": "Учебник.pdf", "page": 3, "source": "/private/path"}],
+    }
+    response = client.post("/ask", json={"input": "Вопрос", "user_id": 101})
+    assert response.status_code == 200
+    assert response.json() == {"answer": "Ответ", "sources": [{"document": "Учебник.pdf", "page": 3}]}
+
+
+@pytest.mark.parametrize("sources", [
+    None, "manual.pdf", [{}], [{"document": ""}],
+    [{"document": "../private.pdf", "page": 1}],
+    [{"document": "C:\\private\\manual.pdf", "page": 1}],
+    [{"document": "private.pdf?secret=token", "page": 1}],
+    [{"document": "bad\nname.pdf", "page": 1}],
+    [{"document": "a" * 256, "page": 1}],
+    [{"document": "manual.pdf", "page": 0}],
+    [{"document": "manual.pdf", "page": True}],
+    [{"document": "manual.pdf", "page": "1"}],
+    [{"document": "manual.pdf", "page": 1.5}],
+    [{"document": "manual.pdf", "page": 2**53}],
+    [{"document": "manual.pdf", "page": 1}] * 21,
+])
+def test_invalid_sources_return_safe_gateway_error(api_client, caplog, sources):
+    client, state, _ = api_client
+    state.response = {"answer": "Ответ", "sources": sources}
+    response = client.post("/ask", json={"input": "Вопрос", "user_id": 101})
+    assert response.status_code == 502
+    assert "private" not in response.text
+    assert "secret" not in caplog.text
+
+
+def test_sources_allow_unknown_page_and_have_independent_defaults(api_client):
+    client, state, module = api_client
+    first = module.Answer(answer="Один")
+    second = module.Answer(answer="Два")
+    first.sources.append(module.Source(document="manual.pdf", page=None))
+    assert second.sources == []
+    state.response = {"answer": "Ответ", "sources": [{"document": "manual.pdf", "page": None}]}
+    response = client.post("/ask", json={"input": "Вопрос", "user_id": 101})
+    assert response.json()["sources"] == [{"document": "manual.pdf", "page": None}]
+
+
+def test_upload_passes_original_name_separately_from_unique_storage_path(api_client):
+    client, state, _ = api_client
+    response = client.post("/upload", data={"user_id": "101"}, files={
+        "file": ("../Учебник.pdf", b"test", "application/pdf"),
+    })
+    assert response.status_code == 200
+    assert state.upload_names == ["../Учебник.pdf"]
+    assert state.upload_calls[0][0].name != "Учебник.pdf"

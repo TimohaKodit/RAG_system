@@ -105,6 +105,7 @@ def test_insufficient_context_prevents_generation(core_module):
     state.sufficient = False
     result = core_module.module.get_rag_chain(101).invoke({"input": "Question"})
 
+    assert result["sources"] == []
     assert result["answer"] == core_module.module.INSUFFICIENT_CONTEXT_ANSWER
     assert result["context"] == state.documents
     assert len(state.jev_calls) == 1
@@ -129,6 +130,7 @@ def test_empty_context_skips_jev_rerank_and_generation(core_module, contents):
     ]
     result = core_module.module.get_rag_chain(101).invoke({"input": "Question"})
 
+    assert result["sources"] == []
     assert result["answer"] == core_module.module.NO_CONTEXT_ANSWER
     assert result["context"] == []
     assert state.jev_calls == []
@@ -205,3 +207,53 @@ def test_compressor_cannot_inject_other_users_context(core_module):
     assert result["context"] == state.documents
     assert state.jev_calls == [("Question", ["Python has lists."])]
     assert "Other user secret" not in state.generations[0][0].content
+
+
+def test_sources_describe_only_generated_context_and_deduplicate_pages(core_module):
+    state = core_module.state
+    state.documents = [
+        core_module.Document(page_content="Page one", metadata={"user_id": 101, "document_name": "Учебник.pdf", "source": "/private/uuid.pdf", "page": 0}),
+        core_module.Document(page_content="More page one", metadata={"user_id": 101, "document_name": "Учебник.pdf", "page": 0}),
+        core_module.Document(page_content="Page three", metadata={"user_id": 101, "document_name": "Учебник.pdf", "page": 2}),
+        core_module.Document(page_content="Another user", metadata={"user_id": 202, "document_name": "Secret.pdf", "page": 0}),
+    ]
+    result = core_module.module.get_rag_chain(101).invoke({"input": "Question"})
+    assert result["sources"] == [
+        {"document": "Учебник.pdf", "page": 1},
+        {"document": "Учебник.pdf", "page": 3},
+    ]
+    assert len(state.generations) == 1
+    assert len(state.searches) == 1
+    assert "Another user" not in state.generations[0][0].content
+
+
+@pytest.mark.parametrize("page", [None, "0", True, -1, 1.5, 2**53 - 1])
+def test_unknown_or_invalid_page_is_null(core_module, page):
+    state = core_module.state
+    state.documents = [core_module.Document(page_content="Text", metadata={"user_id": 101, "source": r"C:\private\manual.pdf", "page": page})]
+    result = core_module.module.get_rag_chain(101).invoke({"input": "Question"})
+    assert result["sources"] == [{"document": "manual.pdf", "page": None}]
+
+
+@pytest.mark.parametrize("metadata, expected", [
+    ({"source": "/private/manual.pdf", "page": 4}, {"document": "manual.pdf", "page": 5}),
+    ({"document_name": "../../manual.pdf", "source": "/private/uuid.pdf"}, {"document": "manual.pdf", "page": None}),
+    ({"document_name": "..", "source": "/private/legacy.pdf"}, {"document": "legacy.pdf", "page": None}),
+    ({"source": "https://server/private/manual.pdf?token=secret"}, {"document": "manual.pdf", "page": None}),
+    ({"source": "https://server/private/manual.pdf?token=secret/part"}, {"document": "manual.pdf", "page": None}),
+    ({"document_name": "bad\x00\u202ename.pdf"}, {"document": "badname.pdf", "page": None}),
+    ({}, {"document": "Документ.pdf", "page": None}),
+])
+def test_legacy_and_untrusted_source_metadata_is_safe(core_module, metadata, expected):
+    state = core_module.state
+    state.documents = [core_module.Document(page_content="Text", metadata={"user_id": 101, **metadata})]
+    result = core_module.module.get_rag_chain(101).invoke({"input": "Question"})
+    assert result["sources"] == [expected]
+
+
+def test_source_limits_match_browser_contract(core_module):
+    state = core_module.state
+    state.documents = [core_module.Document(page_content="Text", metadata={"user_id": 101, "document_name": "a" * 260, "page": page}) for page in range(30)]
+    result = core_module.module.get_rag_chain(101).invoke({"input": "Question"})
+    assert len(result["sources"]) == 20
+    assert all(len(source["document"]) == 255 for source in result["sources"])

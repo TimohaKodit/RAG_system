@@ -1,5 +1,6 @@
 from collections.abc import Mapping
 import logging
+import unicodedata
 from pathlib import Path
 from typing import Annotated, Literal
 from uuid import uuid4
@@ -42,8 +43,25 @@ class Query(BaseModel):
         return value
 
 
+class Source(BaseModel):
+    document: str = Field(min_length=1, max_length=255, strict=True)
+    page: int | None = Field(default=None, ge=1, le=2**53 - 1, strict=True)
+
+    @field_validator("document")
+    @classmethod
+    def validate_document(cls, value: str) -> str:
+        if (
+            not value.strip() or value in (".", "..")
+            or any(char in value for char in ("/", "\\", ":", "?", "#"))
+            or any(unicodedata.category(char).startswith("C") for char in value)
+        ):
+            raise ValueError("Источник должен содержать только имя документа")
+        return value
+
+
 class Answer(BaseModel):
     answer: str = Field(min_length=1, strict=True)
+    sources: list[Source] = Field(default_factory=list, max_length=20)
 
     @field_validator("answer")
     @classmethod
@@ -68,7 +86,9 @@ def invoke(inv: Query) -> Answer:
         })
         if not isinstance(response, Mapping):
             raise ValueError("Некорректный результат цепочки")
-        return Answer(answer=response.get("answer"))
+        return Answer(
+            answer=response.get("answer"), sources=response.get("sources", []),
+        )
     except Exception:
         # Exceptions from providers can contain credentials and document text.
         logger.error("Не удалось получить корректный ответ от RAG-цепочки")
@@ -126,7 +146,7 @@ def upload_pdf(
         from ingest import InvalidPDFError, dc
 
         try:
-            chunks = dc(str(path), user_id)
+            chunks = dc(str(path), user_id, document_name=file.filename)
         except InvalidPDFError:
             raise HTTPException(
                 status_code=400,
